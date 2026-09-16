@@ -4,15 +4,16 @@
 
 - **PostgreSQL** (local) como banco de destino.
 - **DBeaver** para conexão, execução dos scripts DDL/DML e conferência visual dos dados.
-- **Python (openpyxl + csv)** como camada de ETL: leitura da planilha `base_teste_systock.xlsx` (5 abas), extração para CSV intermediário e geração dos `INSERT`s versionáveis em `sql/02_backup_dados.sql` — assim toda a carga fica documentada e reproduzível dentro do próprio repositório, sem depender de reabrir o Excel.
+- **Python (openpyxl)** como camada de extração: leitura da planilha `base_teste_systock.xlsx` (5 abas) e exportação para CSV intermediário, script em `scripts/extrair_planilha.py`.
+
+> O enunciado restringe SQL puro apenas para "construir as consultas e análises solicitadas" (Partes 2, 3 e 4). A etapa de **importação/extração** em si não tem essa restrição — usar Python aqui é uma escolha de produtividade e reprodutibilidade, documentada de forma transparente nesta seção.
 
 Fluxo adotado:
 
-1. Ler as 5 abas da planilha (`venda`, `pedido_compra`, `entradas_mercadoria`, `produtos_filial`, `fornecedor`) com `openpyxl`, descartando colunas/linhas totalmente vazias que o Excel mantém no `used range`.
-2. Exportar cada aba para CSV (`data/*.csv`), aplicando os tratamentos da seção 3.
-3. Rodar `sql/01_schema_corrigido.sql` no PostgreSQL local via DBeaver.
-4. Rodar `sql/02_backup_dados.sql` para popular o banco.
-5. Rodar as consultas de conferência da Parte 4 para validar volumetria e consistência antes de seguir para as Partes 2 e 3.
+1. Rodar `python3 scripts/extrair_planilha.py base_teste_systock.xlsx --saida data/`, que lê as 5 abas com `openpyxl`, descarta colunas/linhas totalmente vazias do `used range` do Excel e aplica os tratamentos da seção 3, gravando `data/*.csv`.
+2. Rodar `sql/01_schema_corrigido.sql` no PostgreSQL local via DBeaver.
+3. Rodar `sql/02_backup_dados.sql` (gerado a partir dos CSVs de `data/`) para popular o banco.
+4. Rodar as consultas de conferência da Parte 4 para validar volumetria e consistência antes de seguir para as Partes 2 e 3.
 
 ## 2. Estrutura da planilha
 

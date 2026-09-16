@@ -7,6 +7,8 @@ Solução do case técnico de importação, integração e validação de dados 
 ```
 systock-case/
 ├── README.md                              # este arquivo
+├── scripts/
+│   └── extrair_planilha.py                # extração xlsx -> CSV (etapa de importação, Parte 1)
 ├── sql/
 │   ├── 01_schema_corrigido.sql            # DDL corrigido (com comentários dos erros originais)
 │   ├── 02_backup_dados.sql                # carga completa dos dados reais (INSERTs)
@@ -25,14 +27,15 @@ systock-case/
 
 ## Como reproduzir localmente
 
-1. Suba um PostgreSQL local (ex.: `docker run --name systock -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:16`).
-2. Conecte via DBeaver (ou outro client de sua preferência) em `localhost:5432`.
-3. Execute os scripts **nesta ordem**:
+1. *(Opcional — os CSVs de `data/` já estão gerados)* Reextrair da planilha original: `pip install openpyxl --break-system-packages && python3 scripts/extrair_planilha.py base_teste_systock.xlsx --saida data/`.
+2. Suba um PostgreSQL local (ex.: `docker run --name systock -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:16`).
+3. Conecte via DBeaver (ou outro client de sua preferência) em `localhost:5432`.
+4. Execute os scripts **nesta ordem**:
    1. `sql/01_schema_corrigido.sql`
    2. `sql/02_backup_dados.sql`
    3. `sql/03_consultas_basicas.sql`
    4. `sql/04_transformacoes.sql`
-4. Consulte `docs/01_processo_importacao.md` e `docs/04_roteiro_validacao_cliente.md` para o racional de cada decisão e para as queries de auditoria/validação.
+5. Consulte `docs/01_processo_importacao.md` e `docs/04_roteiro_validacao_cliente.md` para o racional de cada decisão e para as queries de auditoria/validação.
 
 ## Resumo das entregas
 
