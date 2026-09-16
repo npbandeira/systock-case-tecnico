@@ -7,10 +7,14 @@
 -- Total de vendas (quantidade e valor em R$) de cada produto,
 -- em fevereiro de 2025.
 -- ---------------------------------------------------------------------
+-- Nota: qtde_vendida e float8 e valor_unitario e numeric; a multiplicacao
+-- entre os dois resulta em double precision, e o Postgres nao tem uma
+-- versao de ROUND(double precision, 2) com casas decimais (so existe
+-- para numeric) -- por isso o cast ::numeric antes do ROUND.
 SELECT
     v.produto_id,
     SUM(v.qtde_vendida)                         AS qtde_total_vendida,
-    ROUND(SUM(v.qtde_vendida * v.valor_unitario), 2) AS valor_total_vendido
+    ROUND(SUM(v.qtde_vendida * v.valor_unitario)::numeric, 2) AS valor_total_vendido
 FROM public.venda v
 WHERE v.data_emissao >= DATE '2025-02-01'
   AND v.data_emissao <  DATE '2025-03-01'
